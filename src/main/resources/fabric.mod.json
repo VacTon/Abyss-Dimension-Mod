@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "abyss",
+  "version": "${version}",
+  "name": "Minecraft Abyss",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/abyss/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "io.github.vacton.abyss.client.AbyssDataGenerator"
+    ],
+    "client": [
+      "io.github.vacton.abyss.client.AbyssClient"
+    ],
+    "main": [
+      "io.github.vacton.abyss.Abyss"
+    ]
+  },
+  "mixins": [
+    "abyss.mixins.json",
+    {
+      "config": "abyss.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

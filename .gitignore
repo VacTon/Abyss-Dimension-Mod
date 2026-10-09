@@ -37,3 +37,10 @@ database.properties
 *.iml
 .DS_Store
 Thumbs.db
+
+.gradle/
+build/
+run/
+.idea/
+*.iml
+!gradle/wrapper/gradle-wrapper.jar
