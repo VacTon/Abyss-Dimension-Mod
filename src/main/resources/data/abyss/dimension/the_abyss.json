@@ -1,0 +1,11 @@
+{
+  "type": "abyss:the_abyss",
+  "generator": {
+    "type": "minecraft:noise",
+    "settings": "abyss:the_abyss",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "abyss:the_abyss"
+    }
+  }
+}
