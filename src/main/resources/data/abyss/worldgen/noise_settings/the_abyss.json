@@ -6,7 +6,7 @@
   "legacy_random_source": false,
   "default_block": { "Name": "abyss:abyss_block" },
   "default_fluid": {
-    "Name": "minecraft:lava",
+    "Name": "abyss:abyss_liquid",
     "Properties": { "level": "0" }
   },
   "noise": {

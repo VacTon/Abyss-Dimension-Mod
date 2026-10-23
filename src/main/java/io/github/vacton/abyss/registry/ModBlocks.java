@@ -3,6 +3,8 @@ package io.github.vacton.abyss.registry;
 import io.github.vacton.abyss.Abyss;
 import io.github.vacton.abyss.block.AbyssBlock;
 import java.util.function.Function;
+
+import io.github.vacton.abyss.block.AbyssLiquidBlock;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -13,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.PushReaction;
 
 public class ModBlocks {
 
@@ -23,6 +26,20 @@ public class ModBlocks {
                     .strength(30.0f, 1000.0f)
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.MUD));
+
+    public static final Block ABYSS_LIQUID = Registry.register(
+            BuiltInRegistries.BLOCK,
+            Identifier.fromNamespaceAndPath(Abyss.MOD_ID, "abyss_liquid"),
+            new AbyssLiquidBlock(ModFluids.ABYSS_LIQUID,
+                    BlockBehaviour.Properties.of()
+                            .replaceable()
+                            .noCollision()
+                            .strength(100.0f)
+                            .noLootTable()
+                            .pushReaction(PushReaction.DESTROY)
+                            .liquid()
+                            .setId(ResourceKey.create(Registries.BLOCK,
+                                    Identifier.fromNamespaceAndPath(Abyss.MOD_ID, "abyss_liquid")))));
 
     private static Block register(String name,
                                   Function<BlockBehaviour.Properties, Block> factory,
