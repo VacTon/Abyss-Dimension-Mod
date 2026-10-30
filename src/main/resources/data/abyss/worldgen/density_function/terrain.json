@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:max",
+  "argument1": "abyss:land",
+  "argument2": {
+    "type": "minecraft:max",
+    "argument1": "abyss:mountain_large",
+    "argument2": {
+      "type": "minecraft:max",
+      "argument1": "abyss:mountain_medium",
+      "argument2": "abyss:mountain_small"
+    }
+  }
+}
