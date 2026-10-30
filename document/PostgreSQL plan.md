@@ -1,6 +1,7 @@
 # Setup
 Download PostgreSQL Version 18 Installer for Windows 64bit (32bit is unsupported). 
 ![PostgreSQL installation](PostgreSQLInstallation.png)
+
 Remember to keep:
 - PostgreSQL Server: the actual database
 - pgAdmin 4: GUI for the database, this is local
