@@ -11,6 +11,7 @@ import java.sql.Statement;
 public class DatabaseConnection {
     private final Path dbFile;
     private final Connection connection;
+    private static final Path MEMORY = Path.of(":memory:");
 
     /**
      * Construct a DatabaseConnection with a Path to the database file and a long-lived Connection.
@@ -19,13 +20,31 @@ public class DatabaseConnection {
      */
     public DatabaseConnection(Path databasePath) {
         //The path is pre-built
-        dbFile = databasePath.toAbsolutePath();
+        boolean inMemory = MEMORY.equals(databasePath);
+        String url;
 
         try {
-            //If the built path has nonexistent folder, this fixes it
-            //Otherwise, it does nothing
-            Files.createDirectories(dbFile.getParent());
-            connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile);
+            if (inMemory) {
+                //This is a test, there is no file
+                dbFile = null;
+                url = "jdbc:sqlite::memory:";
+            } else {
+                dbFile = databasePath.toAbsolutePath();
+
+                //If the built path has nonexistent folder, this fixes it
+                //Otherwise, it does nothing
+                Files.createDirectories(dbFile.getParent());
+                url = "jdbc:sqlite:" + dbFile;
+            }
+
+            connection = DriverManager.getConnection(url);
+
+            try (Statement st = connection.createStatement()) {
+                //Enforce foreign key constraints and set timeout so it can wait when locked
+                //The unit is ms, so 5000 = 5s
+                st.execute("PRAGMA foreign_keys = ON");
+                st.execute("PRAGMA busy_timeout = 5000");
+            }
         } catch (IOException | SQLException e) {
             throw new DatabaseException("Failed to open database at " + dbFile, e);
         }
@@ -37,8 +56,6 @@ public class DatabaseConnection {
      */
     public void initSchema() {
         try (Statement statement = connection.createStatement()) {
-            statement.execute("PRAGMA foreign_keys = ON");
-
             String createPlayer = """
                     CREATE TABLE IF NOT EXISTS "player" (
                     	"uuid"	TEXT,
@@ -61,6 +78,20 @@ public class DatabaseConnection {
                     )
                     """;
             statement.execute(createPower);
+
+            //Upsert here
+            String seedPowers = """
+                    INSERT INTO "power" ("power_id", "power_name", "cost", "cooldown")
+                    VALUES
+                        (1, 'Haste',     8,  600),
+                        (2, 'Explosion', 32, 1200),
+                        (3, 'Summon',    16, 300)
+                    ON CONFLICT("power_id") DO UPDATE SET
+                        "power_name" = excluded."power_name",
+                        "cost"       = excluded."cost",
+                        "cooldown"   = excluded."cooldown"
+                    """;
+            statement.execute(seedPowers);
         } catch (SQLException e) {
             throw new DatabaseException("Failed to initialize schema for database at " + dbFile, e);
         }
