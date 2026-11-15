@@ -8,28 +8,34 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DatabaseConnection {
-    private final Path dbFile;
+public class DatabaseConnection implements AutoCloseable {
+    private final Path dbFile;  //null when in memory
     private final Connection connection;
-    private static final Path MEMORY = Path.of(":memory:");
+
+    private static final String MEMORY = ":memory:";
 
     /**
      * Construct a DatabaseConnection with a Path to the database file and a long-lived Connection.
      * This connection is final and if it dies, you have to make another DatabaseConnection.
-     * @param databasePath: the prepared path built relatively from the gameDir
+     * @param databasePath the prepared path built relatively from the gameDir. The expected path is <world folder>/abyss/abyss.db
      */
     public DatabaseConnection(Path databasePath) {
-        //The path is pre-built
-        boolean inMemory = MEMORY.equals(databasePath);
-        String url;
+        this(databasePath.toAbsolutePath().toString());
+    }
 
+    /**
+     * This is used for testing mostly, but can accept a text file path
+     * @param location Either ":memory:" (tests) or a file path as text
+     */
+    public DatabaseConnection(String location) {
         try {
-            if (inMemory) {
+            String url;
+            if (MEMORY.equals(location)) {
                 //This is a test, there is no file
                 dbFile = null;
                 url = "jdbc:sqlite::memory:";
             } else {
-                dbFile = databasePath.toAbsolutePath();
+                dbFile = Path.of(location);
 
                 //If the built path has nonexistent folder, this fixes it
                 //Otherwise, it does nothing
@@ -39,14 +45,14 @@ public class DatabaseConnection {
 
             connection = DriverManager.getConnection(url);
 
-            try (Statement st = connection.createStatement()) {
+            try (Statement statement = connection.createStatement()) {
                 //Enforce foreign key constraints and set timeout so it can wait when locked
                 //The unit is ms, so 5000 = 5s
-                st.execute("PRAGMA foreign_keys = ON");
-                st.execute("PRAGMA busy_timeout = 5000");
+                statement.execute("PRAGMA foreign_keys = ON");
+                statement.execute("PRAGMA busy_timeout = 5000");
             }
         } catch (IOException | SQLException e) {
-            throw new DatabaseException("Failed to open database at " + dbFile, e);
+            throw new DatabaseException("Failed to open database at " + location, e);
         }
     }
 
@@ -111,7 +117,7 @@ public class DatabaseConnection {
 
     /**
      * Package-private in database package, so no outside package can access this connection.
-     * @return connection
+     * @return the persistent connection
      */
     Connection connection() {
         return connection;

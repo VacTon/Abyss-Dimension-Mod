@@ -1,16 +1,27 @@
 package model;
 
+import java.util.Objects;
+import java.util.UUID;
+
 public record PlayerProfile(
-        String uuid,
+        UUID uuid,
         String username,
-        int firstLogin,
-        int lastSeen,
+        long firstLogin,
+        long lastSeen,
         int darknessEssence
 ) {
+    public static final long DEFAULT_LAST_SEEN = 0;
+    public static final int DEFAULT_DARKNESS_ESSENCE = 0;
+
+    public static final String TABLE_NAME = "player";
+    public static final String UUID_COL = "uuid";
+    public static final String USERNAME_COL = "username";
+    public static final String FIRST_LOGIN_COL = "first_login";
+    public static final String LAST_SEEN_COL = "last_seen";
+    public static final String DARKNESS_ESSENCE_COL = "darkness_essence";
+
     public PlayerProfile {
-        if (uuid == null || uuid.isBlank()) {
-            throw new IllegalArgumentException("uuid (PK) cannot be null or blank");
-        }
+        Objects.requireNonNull(uuid, "uuid (PK) cannot be null");
 
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("username cannot be null or blank");

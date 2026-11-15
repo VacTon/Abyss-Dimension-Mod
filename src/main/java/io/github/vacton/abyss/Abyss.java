@@ -25,15 +25,6 @@ public class Abyss implements ModInitializer {
         ModBlocks.initialize();
         ModItems.initialize();
 
-        //Test SQLite here, using SLF4J logger instead of System.out, System.err, or printStackTrace()
-        try {
-            Path gameDir = FabricLoader.getInstance().getGameDir();
-            SQLiteTest.testSQLite(gameDir);
-            LOGGER.info("SQLite integration test passed");
-        } catch (SQLException e) {
-            LOGGER.error("SQLite integration test failed", e);
-        }
-
         ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.BUILDING_BLOCKS)
                 .register(entries -> entries.accept(ModBlocks.ABYSS_BLOCK));
 
