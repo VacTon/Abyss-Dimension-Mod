@@ -4,7 +4,6 @@ import io.github.vacton.abyss.Abyss;
 import model.PlayerProfile;
 import model.PowerRecord;
 
-import net.minecraft.world.entity.player.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
