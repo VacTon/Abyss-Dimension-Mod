@@ -2,14 +2,18 @@ package database;
 
 import io.github.vacton.abyss.Abyss;
 import model.PlayerProfile;
-import net.minecraft.world.entity.player.Player;
+import model.PowerRecord;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -119,6 +123,120 @@ public class StatsRepository {
             }
         } catch (SQLException e) {
             throw new DatabaseException("touchLastSeen(%s, %d) failed".formatted(uuid, lastSeen), e);
+        }
+    }
+
+    /***
+     * Add essence to a specific player by uuid
+     * @param uuid the player uuid
+     * @param amount the amount to add, must be >= 0. If amount == 0, do nothing.
+     */
+    public void addEssence(UUID uuid, int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("addEssence(%s, %d) cannot add negative essence".formatted(uuid, amount));
+        }
+
+        if (amount == 0) {
+            return;
+        }
+
+        String uuidText = uuid.toString();
+        String updateEssence = """
+            UPDATE "%s"
+            SET %s = %s + ?
+            WHERE %s = ?
+            """.formatted(
+                PlayerProfile.TABLE_NAME,
+                PlayerProfile.DARKNESS_ESSENCE_COL,
+                PlayerProfile.DARKNESS_ESSENCE_COL,
+                PlayerProfile.UUID_COL
+        );
+
+        try (PreparedStatement preparedStatement = connection.connection().prepareStatement(updateEssence)) {
+            preparedStatement.setInt(1, amount);
+            preparedStatement.setString(2, uuidText);
+            int rows = preparedStatement.executeUpdate();
+            if (rows == 0) {
+                LOGGER.warn("addEssence({}, {}): no player with that uuid", uuidText, amount);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("addEssence(%s, %d) failed".formatted(uuid, amount), e);
+        }
+    }
+
+    /***
+     * Spend essence of a specific player by uuid
+     * @param uuid the uuid of the player having this essence
+     * @param amount the amount to spend, >= 0
+     */
+    public void spendEssence(UUID uuid, int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("spendEssence(%s, %d) cannot spend negative essence".formatted(uuid, amount));
+        }
+
+        if (amount == 0) {
+            return;
+        }
+
+        String uuidText = uuid.toString();
+        String updateEssence = """
+            UPDATE "%s"
+            SET %s = %s - ?
+            WHERE %s = ?
+            """.formatted(
+                PlayerProfile.TABLE_NAME,
+                PlayerProfile.DARKNESS_ESSENCE_COL,
+                PlayerProfile.DARKNESS_ESSENCE_COL,
+                PlayerProfile.UUID_COL
+        );
+
+        try (PreparedStatement preparedStatement = connection.connection().prepareStatement(updateEssence)) {
+            preparedStatement.setInt(1, amount);
+            preparedStatement.setString(2, uuidText);
+            int rows = preparedStatement.executeUpdate();
+            if (rows == 0) {
+                LOGGER.warn("spendEssence({}, {}): no player with that uuid", uuidText, amount);
+            }
+        } catch (SQLException e) {
+            //If the constraint darkness_essence >= 0 is violated, it will be caught here
+            throw new DatabaseException("spendEssence(%s, %d) failed".formatted(uuid, amount), e);
+        }
+    }
+
+    /**
+     * Get all powers defined in DatabaseConnection.initSchema()
+     * @return all powers available in the database
+     */
+    public List<PowerRecord> getAllPowers() {
+        //This uses a list to not depend too much on implementation details. It just has to implement a List
+        List<PowerRecord> powerList = new ArrayList<>();
+        String selectPowers = """
+            SELECT *
+            FROM "%s"
+            """.formatted(
+                PowerRecord.TABLE_NAME
+        );
+
+        try (Statement statement = connection.connection().createStatement();
+             ResultSet resultSet = statement.executeQuery(selectPowers)) {
+
+            while (resultSet.next()) {
+                PowerRecord powerRecord = new PowerRecord(
+                        resultSet.getInt(PowerRecord.POWER_ID_COL),
+                        resultSet.getString(PowerRecord.POWER_NAME_COL),
+                        resultSet.getInt(PowerRecord.COST_COL),
+                        resultSet.getInt(PowerRecord.COOLDOWN_COL)
+                );
+                powerList.add(powerRecord);
+            }
+
+            if (powerList.isEmpty()) {
+                LOGGER.warn("getAllPowers() found no powers");
+            }
+
+            return powerList;
+        } catch (SQLException e) {
+            throw new DatabaseException("getAllPowers() failed", e);
         }
     }
 }
