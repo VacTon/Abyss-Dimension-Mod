@@ -4,6 +4,7 @@ import io.github.vacton.abyss.Abyss;
 import model.PlayerProfile;
 import model.PowerRecord;
 
+import net.minecraft.world.entity.player.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class StatsRepository {
-    //TODO: Will implement addEssence, spendEssence, getPower(int), getPower(String), getAllPowers, mapProfile later
     private static final Logger LOGGER = LoggerFactory.getLogger(Abyss.MOD_ID);
 
     private final DatabaseConnection connection;
@@ -76,20 +76,7 @@ public class StatsRepository {
                         throw new DatabaseException("Player " + uuidText + " missing right after insert");
                     }
 
-                    long lastSeen = resultSet.getLong(PlayerProfile.LAST_SEEN_COL);
-                    if (resultSet.wasNull()) {
-                        //NULL is the default value in the database itself, but long cannot be null in Java
-                        //So we normalize
-                        lastSeen = PlayerProfile.DEFAULT_LAST_SEEN;
-                    }
-
-                    return new PlayerProfile(
-                            UUID.fromString(resultSet.getString(PlayerProfile.UUID_COL)),
-                            resultSet.getString(PlayerProfile.USERNAME_COL),
-                            resultSet.getLong(PlayerProfile.FIRST_LOGIN_COL),
-                            lastSeen,   //This is the normalized one
-                            resultSet.getInt(PlayerProfile.DARKNESS_ESSENCE_COL)
-                    );
+                    return mapProfile(resultSet);
                 }
             }
         } catch (SQLException e) {
@@ -129,15 +116,12 @@ public class StatsRepository {
     /***
      * Add essence to a specific player by uuid
      * @param uuid the player uuid
-     * @param amount the amount to add, must be >= 0. If amount == 0, do nothing.
+     * @param amount the amount to add, must be >= 0
+     * @return new darkness essence balance
      */
-    public void addEssence(UUID uuid, int amount) {
+    public int addEssence(UUID uuid, int amount) {
         if (amount < 0) {
             throw new IllegalArgumentException("addEssence(%s, %d) cannot add negative essence".formatted(uuid, amount));
-        }
-
-        if (amount == 0) {
-            return;
         }
 
         String uuidText = uuid.toString();
@@ -145,19 +129,26 @@ public class StatsRepository {
             UPDATE "%s"
             SET %s = %s + ?
             WHERE %s = ?
+            RETURNING %s;
             """.formatted(
                 PlayerProfile.TABLE_NAME,
                 PlayerProfile.DARKNESS_ESSENCE_COL,
                 PlayerProfile.DARKNESS_ESSENCE_COL,
-                PlayerProfile.UUID_COL
+                PlayerProfile.UUID_COL,
+                PlayerProfile.DARKNESS_ESSENCE_COL
         );
 
         try (PreparedStatement preparedStatement = connection.connection().prepareStatement(updateEssence)) {
             preparedStatement.setInt(1, amount);
             preparedStatement.setString(2, uuidText);
-            int rows = preparedStatement.executeUpdate();
-            if (rows == 0) {
-                LOGGER.warn("addEssence({}, {}): no player with that uuid", uuidText, amount);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (!resultSet.next()) {
+                    throw new SQLException("No rows updated in addEssence");
+                }
+
+                //Get new balance
+                return resultSet.getInt(PlayerProfile.DARKNESS_ESSENCE_COL);
             }
         } catch (SQLException e) {
             throw new DatabaseException("addEssence(%s, %d) failed".formatted(uuid, amount), e);
@@ -168,14 +159,11 @@ public class StatsRepository {
      * Spend essence of a specific player by uuid
      * @param uuid the uuid of the player having this essence
      * @param amount the amount to spend, >= 0
+     * @return true if exactly 1 row changed
      */
-    public void spendEssence(UUID uuid, int amount) {
+    public boolean spendEssence(UUID uuid, int amount) {
         if (amount < 0) {
             throw new IllegalArgumentException("spendEssence(%s, %d) cannot spend negative essence".formatted(uuid, amount));
-        }
-
-        if (amount == 0) {
-            return;
         }
 
         String uuidText = uuid.toString();
@@ -197,6 +185,8 @@ public class StatsRepository {
             if (rows == 0) {
                 LOGGER.warn("spendEssence({}, {}): no player with that uuid", uuidText, amount);
             }
+
+            return rows == 1;
         } catch (SQLException e) {
             //If the constraint darkness_essence >= 0 is violated, it will be caught here
             throw new DatabaseException("spendEssence(%s, %d) failed".formatted(uuid, amount), e);
@@ -221,13 +211,7 @@ public class StatsRepository {
              ResultSet resultSet = statement.executeQuery(selectPowers)) {
 
             while (resultSet.next()) {
-                PowerRecord powerRecord = new PowerRecord(
-                        resultSet.getInt(PowerRecord.POWER_ID_COL),
-                        resultSet.getString(PowerRecord.POWER_NAME_COL),
-                        resultSet.getInt(PowerRecord.COST_COL),
-                        resultSet.getInt(PowerRecord.COOLDOWN_COL)
-                );
-                powerList.add(powerRecord);
+                powerList.add(mapPowerRecord(resultSet));
             }
 
             if (powerList.isEmpty()) {
@@ -238,5 +222,83 @@ public class StatsRepository {
         } catch (SQLException e) {
             throw new DatabaseException("getAllPowers() failed", e);
         }
+    }
+
+    /**
+     * Get a power by its power ID
+     * @param powerId the id of the power, starting from 1
+     * @return the power record matching powerId
+     */
+    public PowerRecord getPower(int powerId) {
+        String findPower = """
+            SELECT *
+            FROM "%s"
+            WHERE %s = ?
+            """.formatted(
+                PowerRecord.TABLE_NAME,
+                PowerRecord.POWER_ID_COL
+        );
+
+        try (PreparedStatement preparedStatement = connection.connection().prepareStatement(findPower)) {
+            preparedStatement.setInt(1, powerId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (!resultSet.next()) {
+                    throw new SQLException("Cannot find this powerId = " + powerId);
+                }
+
+                return mapPowerRecord(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("getPower(%d) failed".formatted(powerId), e);
+        }
+    }
+
+    /**
+     * Get a power by its power name, which is unique
+     * @param powerName
+     * @return the power record matching powerName
+     */
+    public PowerRecord getPower(String powerName) {
+        String findPower = """
+            SELECT *
+            FROM "%s"
+            WHERE %s = ?
+            """.formatted(
+                PowerRecord.TABLE_NAME,
+                PowerRecord.POWER_NAME_COL
+        );
+
+        try (PreparedStatement preparedStatement = connection.connection().prepareStatement(findPower)) {
+            preparedStatement.setString(1, powerName);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (!resultSet.next()) {
+                    throw new SQLException("Cannot find this powerName = " + powerName);
+                }
+
+                return mapPowerRecord(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("getPower(%s) failed".formatted(powerName), e);
+        }
+    }
+
+    private PowerRecord mapPowerRecord(ResultSet resultSet) throws SQLException {
+        return new PowerRecord(
+                resultSet.getInt(PowerRecord.POWER_ID_COL),
+                resultSet.getString(PowerRecord.POWER_NAME_COL),
+                resultSet.getInt(PowerRecord.COST_COL),
+                resultSet.getInt(PowerRecord.COOLDOWN_COL)
+        );
+    }
+
+    private PlayerProfile mapProfile(ResultSet resultSet) throws SQLException {
+        return new PlayerProfile(
+                UUID.fromString(resultSet.getString(PlayerProfile.UUID_COL)),
+                resultSet.getString(PlayerProfile.USERNAME_COL),
+                resultSet.getLong(PlayerProfile.FIRST_LOGIN_COL),
+                resultSet.getLong(PlayerProfile.LAST_SEEN_COL),   //This is the normalized one
+                resultSet.getInt(PlayerProfile.DARKNESS_ESSENCE_COL)
+        );
     }
 }

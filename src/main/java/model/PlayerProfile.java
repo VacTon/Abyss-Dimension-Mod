@@ -10,9 +10,6 @@ public record PlayerProfile(
         long lastSeen,
         int darknessEssence
 ) {
-    public static final long DEFAULT_LAST_SEEN = 0;
-    public static final int DEFAULT_DARKNESS_ESSENCE = 0;
-
     public static final String TABLE_NAME = "player";
     public static final String UUID_COL = "uuid";
     public static final String USERNAME_COL = "username";
