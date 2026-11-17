@@ -1,15 +1,23 @@
 package io.github.vacton.abyss;
 
+import database.SQLiteTest;
 import io.github.vacton.abyss.registry.ModBlocks;
 import io.github.vacton.abyss.registry.ModFluids;
 import io.github.vacton.abyss.registry.ModItems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.item.CreativeModeTabs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.nio.file.Path;
+import java.sql.SQLException;
 
 public class Abyss implements ModInitializer {
 
     public static final String MOD_ID = "abyss";
+    private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     @Override
     public void onInitialize() {
