@@ -1,0 +1,10 @@
+{
+  "multipart": [
+    { "when": { "north": "true" }, "apply": { "model": "abyss:block/schistostega", "uvlock": true } },
+    { "when": { "east": "true" },  "apply": { "model": "abyss:block/schistostega", "y": 90,  "uvlock": true } },
+    { "when": { "south": "true" }, "apply": { "model": "abyss:block/schistostega", "y": 180, "uvlock": true } },
+    { "when": { "west": "true" },  "apply": { "model": "abyss:block/schistostega", "y": 270, "uvlock": true } },
+    { "when": { "up": "true" },    "apply": { "model": "abyss:block/schistostega", "x": 270, "uvlock": true } },
+    { "when": { "down": "true" },  "apply": { "model": "abyss:block/schistostega", "x": 90,  "uvlock": true } }
+  ]
+}

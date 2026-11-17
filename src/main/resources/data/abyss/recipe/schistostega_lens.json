@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": { "S": "abyss:schistostega", "E": "abyss:darkness_essence" },
+  "pattern": ["SSS", "SES", "SSS"],
+  "result": { "id": "abyss:schistostega_lens", "count": 1 }
+}

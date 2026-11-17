@@ -1,0 +1,18 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "abyss:block/schistostega",
+    "texture": "abyss:block/schistostega"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0.1],
+      "to": [16, 16, 0.1],
+      "shade": false,
+      "faces": {
+        "north": { "uv": [0, 0, 16, 16], "texture": "#texture" },
+        "south": { "uv": [0, 0, 16, 16], "texture": "#texture" }
+      }
+    }
+  ]
+}
