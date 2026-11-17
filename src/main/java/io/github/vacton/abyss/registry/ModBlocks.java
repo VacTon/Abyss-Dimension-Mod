@@ -2,6 +2,7 @@ package io.github.vacton.abyss.registry;
 
 import io.github.vacton.abyss.Abyss;
 import io.github.vacton.abyss.block.AbyssBlock;
+import io.github.vacton.abyss.block.SchistostegaBlock;
 import java.util.function.Function;
 
 import io.github.vacton.abyss.block.AbyssLiquidBlock;
@@ -15,6 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 
 public class ModBlocks {
@@ -26,6 +28,18 @@ public class ModBlocks {
                     .strength(30.0f, 4.2f)
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.MUD));
+
+    public static final Block SCHISTOSTEGA = register(
+            "schistostega",
+            SchistostegaBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.EMERALD)
+                    .replaceable()
+                    .noCollision()
+                    .strength(0.2f)
+                    .sound(SoundType.GLOW_LICHEN)
+                    .lightLevel(SchistostegaBlock.emission())
+                    .pushReaction(PushReaction.DESTROY));
 
     public static final Block ABYSS_LIQUID = Registry.register(
             BuiltInRegistries.BLOCK,

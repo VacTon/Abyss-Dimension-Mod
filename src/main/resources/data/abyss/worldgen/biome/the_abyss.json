@@ -7,7 +7,7 @@
   "effects": {
     "water_color": "#3f76e4"
   },
-  "features": [[], [], [], [], [], [], [], [], [], []],
+  "features": [[], [], [], [], [], [], [], [], [], ["abyss:schistostega_patch"]],
   "has_precipitation": false,
   "spawn_costs": {},
   "spawners": {

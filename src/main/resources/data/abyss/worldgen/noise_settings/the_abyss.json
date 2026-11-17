@@ -63,7 +63,7 @@
             "type": "minecraft:noise_threshold",
             "noise": "abyss:mountains",
             "min_threshold": -10.0,
-            "max_threshold": 0.75
+            "max_threshold": 0.7
           },
           "then_run": {
             "type": "minecraft:condition",
