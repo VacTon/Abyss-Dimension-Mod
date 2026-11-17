@@ -255,7 +255,7 @@ public class StatsRepository {
 
     /**
      * Get a power by its power name, which is unique
-     * @param powerName
+     * @param powerName the name of the power
      * @return the power record matching powerName
      */
     public PowerRecord getPower(String powerName) {
