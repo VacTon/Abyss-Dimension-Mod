@@ -23,7 +23,7 @@ public class ModBlocks {
             "abyss_block",
             AbyssBlock::new,
             BlockBehaviour.Properties.of()
-                    .strength(30.0f, 1000.0f)
+                    .strength(30.0f, 4.2f)
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.MUD));
 

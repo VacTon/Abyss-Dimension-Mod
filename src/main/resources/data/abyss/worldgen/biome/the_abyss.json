@@ -2,7 +2,7 @@
   "attributes": {
     "minecraft:visual/fog_color": "#05050f"
   },
-  "carvers": "minecraft:nether_cave",
+  "carvers": [],
   "downfall": 0.0,
   "effects": {
     "water_color": "#3f76e4"

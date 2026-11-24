@@ -1,0 +1,57 @@
+{
+  "type": "minecraft:add",
+  "argument1": {
+    "type": "minecraft:add",
+    "argument1": {
+      "type": "minecraft:mul",
+      "argument1": 83.0,
+      "argument2": {
+        "type": "minecraft:clamp",
+        "input": {
+          "type": "minecraft:mul",
+          "argument1": 16.0,
+          "argument2": {
+            "type": "minecraft:add",
+            "argument1": -0.75,
+            "argument2": {
+              "type": "minecraft:cache_2d",
+              "argument": {
+                "type": "minecraft:noise",
+                "noise": "abyss:mountains",
+                "xz_scale": 1.0,
+                "y_scale": 0.0
+              }
+            }
+          }
+        },
+        "min": 0.0,
+        "max": 1.0
+      }
+    },
+    "argument2": {
+      "type": "minecraft:y_clamped_gradient",
+      "from_y": -192,
+      "to_y": -60,
+      "from_value": 0.0,
+      "to_value": -132.0
+    }
+  },
+  "argument2": {
+    "type": "minecraft:clamp",
+    "input": {
+      "type": "minecraft:mul",
+      "argument1": 1.5,
+      "argument2": {
+        "type": "minecraft:cache_2d",
+        "argument": {
+          "type": "minecraft:noise",
+          "noise": "abyss:the_abyss",
+          "xz_scale": 1.0,
+          "y_scale": 0.0
+        }
+      }
+    },
+    "min": -1.0,
+    "max": 1.0
+  }
+}
