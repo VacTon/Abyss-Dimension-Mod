@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": { "L": "abyss:schistostega_lens", "S": "minecraft:stick" },
+  "pattern": ["LSL"],
+  "result": { "id": "abyss:schistostega_goggles", "count": 1 }
+}

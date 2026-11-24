@@ -7,9 +7,12 @@ import io.github.vacton.abyss.registry.ModEntities;
 import io.github.vacton.abyss.registry.ModFluids;
 import io.github.vacton.abyss.registry.ModItems;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.monster.Monster;
@@ -58,6 +61,17 @@ public class Abyss implements ModInitializer {
                     entries.accept(ModItems.DARKNESS_ESSENCE);
                     entries.accept(ModItems.SCHISTOSTEGA_LENS);
                 });
+
+        ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT)
+                .register(entries -> entries.accept(ModItems.SCHISTOSTEGA_GOGGLES));
+
+        ServerEntityEvents.EQUIPMENT_CHANGE.register((entity, slot, previous, next) -> {
+            if (slot == EquipmentSlot.HEAD
+                    && previous.is(ModItems.SCHISTOSTEGA_GOGGLES)
+                    && !next.is(ModItems.SCHISTOSTEGA_GOGGLES)) {
+                entity.removeEffect(MobEffects.NIGHT_VISION);
+            }
+        });
 
         // 0-1 Darkness Essence in End City chests.
         LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
