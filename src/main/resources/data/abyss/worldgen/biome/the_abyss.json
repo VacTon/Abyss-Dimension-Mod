@@ -16,7 +16,7 @@
     "creature": [],
     "misc": [],
     "monster": [
-      { "type": "minecraft:zombie", "maxCount": 4, "minCount": 2, "weight": 100 }
+      { "type": "abyss:abyss_zombie", "maxCount": 4, "minCount": 2, "weight": 100 }
     ],
     "underground_water_creature": [],
     "water_ambient": [],

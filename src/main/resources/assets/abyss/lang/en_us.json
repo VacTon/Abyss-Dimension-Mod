@@ -6,6 +6,8 @@
   "item.abyss.darkness_essence": "Darkness Essence",
   "item.abyss.schistostega_lens": "Schistostega Lens",
 
+  "entity.abyss.abyss_zombie": "Abyss Zombie",
+
   "death.attack.abyss_liquid": "%1$s was swallowed by the Abyss",
   "death.attack.abyss_liquid.player": "%1$s was swallowed by the Abyss while fighting %2$s"
 }
