@@ -19,6 +19,13 @@ public class ModItems {
                             .craftRemainder(Items.BUCKET)
                             .stacksTo(1)));
 
+    /** Dropped by AbyssZombie; deposited into the Opus Tenebrarum; centre of the lens recipe. */
+    public static final Item DARKNESS_ESSENCE = register("darkness_essence",
+            key -> new Item(new Item.Properties().setId(key)));
+
+    public static final Item SCHISTOSTEGA_LENS = register("schistostega_lens",
+            key -> new Item(new Item.Properties().setId(key)));
+
     private static Item register(String name,
                                  java.util.function.Function<ResourceKey<Item>, Item> factory) {
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM,

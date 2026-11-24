@@ -1,7 +1,10 @@
 {
   "block.abyss.abyss_block": "Abyss Block",
   "block.abyss.abyss_liquid": "Abyss Liquid",
+  "block.abyss.schistostega": "Schistostega",
   "item.abyss.abyss_liquid_bucket": "Abyss Bucket",
+  "item.abyss.darkness_essence": "Darkness Essence",
+  "item.abyss.schistostega_lens": "Schistostega Lens",
 
   "death.attack.abyss_liquid": "%1$s was swallowed by the Abyss",
   "death.attack.abyss_liquid.player": "%1$s was swallowed by the Abyss while fighting %2$s"
