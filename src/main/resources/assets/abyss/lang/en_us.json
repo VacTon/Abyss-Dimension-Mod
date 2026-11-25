@@ -4,7 +4,19 @@
   "item.abyss.abyss_liquid_bucket": "Abyss Bucket",
 
   "screen.abyss.book.title": "Opus Tenebrarum",
-  "screen.abyss.book.placeholder": "Book screen blueprint",
+  "screen.abyss.book.tab_stats": "Stats",
+  "screen.abyss.book.tab_powers": "Powers",
+  "screen.abyss.book.tab_deposit": "Deposit",
+  "screen.abyss.book.status.preview": "Preview only - not connected to the server",
+  "screen.abyss.book.stats.essence": "Essence: --",
+  "screen.abyss.book.stats.kills": "Kills: --",
+  "screen.abyss.book.stats.time": "Time in the Abyss: --",
+  "screen.abyss.book.powers.summon": "Summon: Cost -- | Cooldown --",
+  "screen.abyss.book.powers.explosion": "Explosion: Cost -- | Cooldown --",
+  "screen.abyss.book.powers.haste": "Haste: Cost -- | Cooldown --",
+  "screen.abyss.book.deposit.description": "Deposit all carried essence",
+  "screen.abyss.book.deposit.button": "Deposit all essence",
+  "screen.abyss.book.deposit.placeholder": "Deposit is not connected yet",
 
   "death.attack.abyss_liquid": "%1$s was swallowed by the Abyss",
   "death.attack.abyss_liquid.player": "%1$s was swallowed by the Abyss while fighting %2$s"
