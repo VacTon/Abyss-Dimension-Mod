@@ -3,8 +3,7 @@ import net.minecraft.network.chat.Component;
 
 public enum BookPage {
     STATS("screen.abyss.book.tab_stats"),
-    POWERS("screen.abyss.book.tab_powers"),
-    DEPOSIT("screen.abyss.book.tab_deposit");
+    POWERS("screen.abyss.book.tab_powers");
 
     private final String translationKey;
 

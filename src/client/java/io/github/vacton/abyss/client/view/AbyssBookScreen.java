@@ -13,7 +13,8 @@ public class AbyssBookScreen extends Screen {
     private static final int TITLE_COLOR = 0xFFFFFFFF;
     private static final int PLACEHOLDER_COLOR = 0xFFAAAAAA;
     private static final int TAB_SELECTED_COLOR = 0xFFFFCC66;
-    private static final int PAGE_GROUP_HEIGHT = 104;
+    private static final int HELPER_TEXT_COLOR = 0xFFFFCC66;
+    private static final int PAGE_GROUP_HEIGHT = 120;
     private static final int TAB_TOP_OFFSET = 20;
     private static final int CONTENT_TOP_OFFSET = 60;
 
@@ -52,7 +53,7 @@ public class AbyssBookScreen extends Screen {
                         button -> statusMessage = Component.translatable("screen.abyss.book.deposit.placeholder"))
                 .bounds(this.width / 2 - 60, groupTop + CONTENT_TOP_OFFSET + 18, 120, 20)
                 .build();
-        depositButton.visible = selectedPage == BookPage.DEPOSIT;
+        depositButton.visible = selectedPage == BookPage.STATS;
         this.addRenderableWidget(depositButton);
 
         statusMessage = Component.translatable("screen.abyss.book.status.preview");
@@ -61,7 +62,7 @@ public class AbyssBookScreen extends Screen {
 
     private void selectPage(BookPage page) {
         selectedPage = page;
-        depositButton.visible = selectedPage == BookPage.DEPOSIT;
+        depositButton.visible = selectedPage == BookPage.STATS;
         statusMessage = Component.translatable("screen.abyss.book.status.preview");
         updateTabLabels();
     }
@@ -89,7 +90,6 @@ public class AbyssBookScreen extends Screen {
         switch (selectedPage) {
             case STATS -> renderStats(guiGraphics);
             case POWERS -> renderPowers(guiGraphics);
-            case DEPOSIT -> renderDeposit(guiGraphics);
         }
 
         guiGraphics.drawCenteredString(this.font, statusMessage,
@@ -97,10 +97,10 @@ public class AbyssBookScreen extends Screen {
     }
 
     private void renderStats(GuiGraphics guiGraphics) {
-        int contentTop = getPageGroupTop() + CONTENT_TOP_OFFSET;
-        drawPlaceholderLine(guiGraphics, "screen.abyss.book.stats.essence", contentTop);
-        drawPlaceholderLine(guiGraphics, "screen.abyss.book.stats.kills", contentTop + 16);
-        drawPlaceholderLine(guiGraphics, "screen.abyss.book.stats.time", contentTop + 32);
+        drawPlaceholderLine(guiGraphics, "screen.abyss.book.stats.essence",
+                getPageGroupTop() + CONTENT_TOP_OFFSET);
+        guiGraphics.drawCenteredString(this.font, Component.translatable("screen.abyss.book.deposit.description"),
+                this.width / 2, getPageGroupTop() + CONTENT_TOP_OFFSET + 44, HELPER_TEXT_COLOR);
     }
 
     private void renderPowers(GuiGraphics guiGraphics) {
@@ -110,14 +110,8 @@ public class AbyssBookScreen extends Screen {
         drawPlaceholderLine(guiGraphics, "screen.abyss.book.powers.haste", contentTop + 32);
     }
 
-    private void renderDeposit(GuiGraphics guiGraphics) {
-        drawPlaceholderLine(guiGraphics, "screen.abyss.book.deposit.description",
-                getPageGroupTop() + CONTENT_TOP_OFFSET);
-    }
-
     private void drawPlaceholderLine(GuiGraphics guiGraphics, String translationKey, int y) {
         guiGraphics.drawCenteredString(this.font, Component.translatable(translationKey),
                 this.width / 2, y, PLACEHOLDER_COLOR);
     }
-
 }
