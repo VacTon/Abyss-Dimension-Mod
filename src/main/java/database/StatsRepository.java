@@ -36,13 +36,14 @@ public class StatsRepository {
     public PlayerProfile loadOrCreateProfile(UUID uuid, String username, long firstLogin) {
         String uuidText = uuid.toString();   // convert once, use everywhere below
         String insertIfMissing = """
-            INSERT OR IGNORE INTO "%s" (%s, %s, %s)
-            VALUES (?, ?, ?)
+            INSERT OR IGNORE INTO "%s" (%s, %s, %s, %s)
+            VALUES (?, ?, ?, ?)
             """.formatted(
                 PlayerProfile.TABLE_NAME,
                 PlayerProfile.UUID_COL,
                 PlayerProfile.USERNAME_COL,
-                PlayerProfile.FIRST_LOGIN_COL
+                PlayerProfile.FIRST_LOGIN_COL,
+                PlayerProfile.LAST_SEEN_COL
         );
 
         String select = """
@@ -64,6 +65,7 @@ public class StatsRepository {
                 insertStatement.setString(1, uuidText);
                 insertStatement.setString(2, username);
                 insertStatement.setLong(3, firstLogin);
+                insertStatement.setLong(4, firstLogin); //lastSeen = firstLogin by default
                 insertStatement.executeUpdate();
             }
 
@@ -296,7 +298,7 @@ public class StatsRepository {
                 UUID.fromString(resultSet.getString(PlayerProfile.UUID_COL)),
                 resultSet.getString(PlayerProfile.USERNAME_COL),
                 resultSet.getLong(PlayerProfile.FIRST_LOGIN_COL),
-                resultSet.getLong(PlayerProfile.LAST_SEEN_COL),   //This is the normalized one
+                resultSet.getLong(PlayerProfile.LAST_SEEN_COL),
                 resultSet.getInt(PlayerProfile.DARKNESS_ESSENCE_COL)
         );
     }
