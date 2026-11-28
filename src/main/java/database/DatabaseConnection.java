@@ -78,8 +78,8 @@ public class DatabaseConnection implements AutoCloseable {
                     CREATE TABLE IF NOT EXISTS "power" (
                     	"power_id"	INTEGER,
                     	"power_name"	TEXT NOT NULL UNIQUE,
-                    	"cost"	INTEGER NOT NULL DEFAULT 0 CHECK("cost" >  0),
-                    	"cooldown"	REAL NOT NULL DEFAULT 0.0 CHECK("cooldown" > 0.0),
+                    	"cost"	INTEGER NOT NULL CHECK("cost" > 0),
+                    	"cooldown"	REAL NOT NULL CHECK("cooldown" > 0.0),
                     	PRIMARY KEY("power_id")
                     )
                     """;
